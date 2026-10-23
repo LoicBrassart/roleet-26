@@ -1,0 +1,18 @@
+{
+  "articles": [
+    {
+      "id": 1,
+      "title": "Hello world !",
+      "content": "It's a brand new world",
+      "author": "ValhallaCode",
+      "publishedAt": "2026-10-22T23:06:00"
+    },
+    {
+      "id": 2,
+      "title": "Premiere entité",
+      "content": "On commence par créer notre entité Article pour le blog",
+      "author": "ValhallaCode",
+      "publishedAt": "2026-10-23T00:00:00"
+    }
+  ]
+}
