@@ -1,11 +1,23 @@
-import App from "./App.tsx";
-import { createBrowserRouter } from "react-router";
-import { getAll } from "../entities/article/index.ts";
+import { createBrowserRouter, redirect } from "react-router";
+import { articleListLoader, ArticleListPage } from "../pages/article-list";
+import {
+  articleDetailLoader,
+  ArticleDetailPage,
+} from "../pages/article-detail";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    loader: getAll,
+    loader: () => redirect("/blog"),
+  },
+  {
+    path: "/blog",
+    Component: ArticleListPage,
+    loader: articleListLoader,
+  },
+  {
+    path: "/blog/:id",
+    Component: ArticleDetailPage,
+    loader: articleDetailLoader,
   },
 ]);
