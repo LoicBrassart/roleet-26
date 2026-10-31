@@ -1,3 +1,16 @@
+import { Link, Outlet } from "react-router";
+
 export function App() {
-  return <>Layout ?</>;
+  return (
+    <>
+      <header>
+        <p>
+          <Link to="/">Roleet 26 !</Link>
+        </p>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
 }
