@@ -1,5 +1,3 @@
-function App() {
+export function App() {
   return <>Layout ?</>;
 }
-
-export default App;

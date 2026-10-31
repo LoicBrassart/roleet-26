@@ -6,8 +6,10 @@ type Props = {
 export function ArticleDetail({ data }: Props) {
   return (
     <article>
-      <h2>{data.title}</h2>
-      <sub>By {data.author}</sub>
+      <hgroup>
+        <h1>{data.title}</h1>
+        <p>By {data.author}</p>
+      </hgroup>
     </article>
   );
 }

@@ -7,11 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:fsd": "steiger ./src",
+    "check": "npm run lint && npm run lint:fsd && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "i": "^0.3.7",
-    "npm": "^12.2.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router": "^8.5.0"
