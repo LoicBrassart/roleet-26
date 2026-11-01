@@ -10,6 +10,12 @@ export function ScenarioDetail({ data }: Props) {
         <h1>{data.title}</h1>
         <p>By {data.author}</p>
       </hgroup>
+      <h2>Teaser</h2>
+      <p>{data.teaser}</p>
+      <h2>Synopsis</h2>
+      <p>{data.synopsis}</p>
+      <h2>Plus en détails</h2>
+      <p>{data.content}</p>
     </article>
   );
 }

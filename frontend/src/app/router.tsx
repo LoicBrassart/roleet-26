@@ -4,8 +4,10 @@ import { articleDetailLoader, ArticleDetailPage } from "@/pages/article-detail";
 import { RootErrorBoundary } from "./RootErrorBoundary";
 import { App } from "./App";
 import { scenarioListLoader, ScenarioListPage } from "@/pages/scenario-list";
-import { scenarioDetailLoader } from "@/pages/scenario-detail";
-import { ScenarioDetailPage } from "@/pages/scenario-detail";
+import {
+  scenarioDetailLoader,
+  ScenarioDetailPage,
+} from "@/pages/scenario-detail";
 
 export const router = createBrowserRouter([
   {

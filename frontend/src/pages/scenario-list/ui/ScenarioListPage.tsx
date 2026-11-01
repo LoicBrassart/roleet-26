@@ -1,6 +1,5 @@
 import { Link, useLoaderData } from "react-router";
 import type { scenarioListLoader } from "../api/loader";
-import {} from "@/entities/scenario";
 import { ScenarioCard } from "@/entities/scenario";
 
 export function ScenarioListPage() {

@@ -4,5 +4,10 @@ type Props = {
   data: Scenario;
 };
 export function ScenarioCard({ data }: Props) {
-  return <h2>{data.title}</h2>;
+  return (
+    <>
+      <h2>{data.title}</h2>
+      <p>{data.teaser}</p>
+    </>
+  );
 }

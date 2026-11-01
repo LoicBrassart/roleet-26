@@ -37,10 +37,10 @@
 `shared` = outils techniques du site (UI kit, client HTTP, utilitaires génériques). Les règles métier n'y ont pas leur place.
 
 ### D2 — Le mock de `shared` est un bouchon temporaire
-`shared/mock.json` contient des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès des entités le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
+`shared/mock.ts` contient des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès des entités le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
 
 ### D3 — Tags et avertissements sont des entités indépendantes des scénarios
-`entities/tag` et `entities/content-warning` existent à côté de `entities/scenario`, sans que l'une importe l'autre. Un scénario ne connaît que des `id`, qui sont de simples chaînes. C'est la **page** qui récupère les données et les assemble, donc `@x` n'est pas nécessaire.
+`entities/tag` et `entities/content-warning` existent à côté de `entities/scenario`, sans que l'une importe l'autre. Un scénario ne connaît que des `id`, qui sont de simples nombres. C'est la **page** qui récupère les données et les assemble, donc `@x` n'est pas nécessaire.
 
 ### D4 — Tags et avertissements partagent un composant visuel, pas leurs données
 Le composant d'affichage (ex. `Badge`, avec une variante pour les avertissements) vit dans `shared/ui` et ne connaît ni l'un ni l'autre.
@@ -65,7 +65,7 @@ src/
 ├── entities/
 │   └── article/
 └── shared/
-    └── mock.json             # bouchon temporaire (D2)
+    └── mock.ts               # bouchon temporaire (D2)
 ```
 
 ### Routes
@@ -112,7 +112,7 @@ src/
 │   └── content-warning/      # D3
 └── shared/
     ├── ui/                   # UI kit, dont Badge (D4)
-    └── mock.json             # bouchon temporaire (D2)
+    └── mock.ts               # bouchon temporaire (D2)
 ```
 
 ## Graphe de dépendances (v1)

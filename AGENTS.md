@@ -13,7 +13,7 @@ Contexte de reprise pour tout agent IA intervenant sur ce dépôt.
 ## Projet
 
 - Frontend seul pour l'instant, dans `frontend/` : Vite, React 19, TypeScript 6, React Router (mode « data », `createBrowserRouter`), Steiger (linter FSD). Un backend est prévu à terme.
-- Le code actuel est un blog simple avec **une seule entité, `article`**. Ce blog est **avant tout un exercice**.
+- Le blog, avec son entité `article`, est **avant tout un exercice**.
 - **Objectif de la v1 :** ajouter, à côté du blog qui est conservé, un recueil de scénarios originaux à l'usage des meneurs, scellés par défaut, avec un descellement définitif. On reste « frontend first » : pas d'auth ni de vrai suivi. Le modèle et le périmètre sont dans `docs/data-model.md`, la structure cible dans `docs/architecture.md`.
 - Documentation de l'utilisateur : `readme.md`, `docs/architecture.md`, `docs/data-model.md`.
 
@@ -27,8 +27,11 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 
 ## Décisions prises
 
-- **Données :** un mock JSON, `src/shared/mock.json`, importé directement. C'est un **bouchon temporaire assumé** dans `shared` (voir D2 dans `docs/architecture.md`). Les fonctions d'accès sont `async` pour pouvoir passer plus tard à un `fetch` sans changer leur signature.
+- **Données :** un mock TypeScript, `src/shared/mock.ts`, importé directement (les backticks y permettent le Markdown multiligne). C'est un **bouchon temporaire assumé** dans `shared` (voir D2 dans `docs/architecture.md`). Les fonctions d'accès sont `async` pour pouvoir passer plus tard à un `fetch` sans changer leur signature.
 - **Priorités de l'exercice :** l'affichage précis des articles est reporté, et les messages de `RootErrorBoundary` conviennent en l'état. Ne pas les signaler comme des manques en relecture.
+- **Données de mock :** le scénario actuel vient d'aidedd.org et la mention du site y est laissée volontairement, pour ne pas oublier de le remplacer. Son Markdown n'est pas soigné, et c'est assumé. Ne pas les signaler en relecture.
+- **Identifiants :** les `id` de `Scenario`, `Tag` et `ContentWarning` sont numériques, car l'utilisateur les gère comme de vraies entités en vue de futures features.
+- **Tags à deux niveaux :** les libellés comme `mastering:facile` restent ainsi pour le moment, et seront repris plus tard.
 - **Modèle `Article` :** `id: number`, `title`, `content`, `author`, `publishedAt: string`. La date reste une chaîne ISO pour l'instant. Les DTO (type brut dans `api/` avec une conversion vers le type métier dans `model/`) sont reportés à plus tard.
 - **Routing :** les données sont chargées par des loaders React Router, lus avec `useLoaderData<typeof xxxLoader>()`. Les composants ne sont jamais `async`.
 - **Conventions de nommage :**
@@ -46,32 +49,39 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
   - `app/` n'a pas de segment `ui` (règle Steiger `no-ui-in-app`) : ses composants sont à sa racine.
   - On utilise `import type` quand seul le type est nécessaire (`verbatimModuleSyntax` est activé).
 
-## État actuel (au 2026-11-01)
+## État actuel (au 2026-11-02)
 
-Dernier commit : `Create & use alias '@' to facilitate cross-layers imports`. Le routeur, le layout, la gestion des erreurs, les liens de la liste vers le détail et l'alias `@/` sont terminés.
+Le routeur, le layout, la gestion des erreurs, les liens de la liste vers le détail et l'alias `@/` sont terminés. Les pages liste et détail des scénarios existent, et `/` redirige vers `/scenario`.
 
 ```
 frontend/src/
 ├── app/            main.tsx, router.tsx, App.tsx (layout), RootErrorBoundary.tsx
 ├── pages/
 │   ├── article-list/    api/loader.ts, ui/ArticleListPage.tsx, index.ts
-│   └── article-detail/  api/loader.ts, ui/ArticleDetailPage.tsx, index.ts
-├── entities/article/    api/access.ts, model/types.ts, ui/ArticleCard.tsx, ui/ArticleDetail.tsx, index.ts
-└── shared/mock.json
+│   ├── article-detail/  api/loader.ts, ui/ArticleDetailPage.tsx, index.ts
+│   ├── scenario-list/   api/loader.ts, ui/ScenarioListPage.tsx, index.ts
+│   └── scenario-detail/ api/loader.ts, ui/ScenarioDetailPage.tsx, index.ts
+├── entities/
+│   ├── article/         api/access.ts, model/types.ts, ui/ArticleCard.tsx, ui/ArticleDetail.tsx, index.ts
+│   ├── scenario/        api/access.ts, model/types.ts, ui/ScenarioCard.tsx, ui/ScenarioDetail.tsx, index.ts
+│   ├── tag/             api/access.ts, model/types.ts, index.ts
+│   └── content-warning/ api/access.ts, model/types.ts, index.ts
+└── shared/mock.ts
 ```
 
 - L'arbre de routes et le rôle des deux boundaries sont décrits dans `docs/architecture.md`, section « Itération actuelle ».
 - Les 404 passent par `throw data(..., { status: 404 })`. La route `*` en lance une pour les URL inconnues.
+- Steiger signale `entities/tag` et `entities/content-warning` comme inutilisées. C'est attendu : ces erreurs disparaîtront quand les pages les utiliseront.
 
 ## Mission en cours : les scénarios
 
-Le modèle et le périmètre de la v1 sont définis dans `docs/data-model.md`. L'implémentation n'est pas commencée. Le blog est conservé : les scénarios sont un ajout. Les descellements sont stockés dans le `localStorage`, en anticipant qu'un backend le remplacera (voir D5 dans `docs/architecture.md`).
+Le modèle et le périmètre de la v1 sont définis dans `docs/data-model.md`. L'implémentation est en cours : restent les badges (tags et avertissements), le rendu Markdown et le descellement. Le blog est conservé : les scénarios sont un ajout. Les descellements sont stockés dans le `localStorage`, en anticipant qu'un backend le remplacera (voir D5 dans `docs/architecture.md`).
 
 Les liens suivent ce principe : la **page** construit l'URL et enveloppe la carte dans un `<Link>`. L'entité ne dépend pas du routage.
 
 ## Points ouverts
 
-- routes des scénarios, et cible de la redirection de `/` (aujourd'hui `/blog`) ;
+- reprise des tags à deux niveaux ;
 - boundary spécifique « introuvable » au niveau d'une page ;
 - DTO et conversion des dates ;
 - fuseau horaire des dates du mock ;

@@ -30,6 +30,14 @@ export const articles = [
     author: "ValhallaCode",
     publishedAt: "2026-10-25T00:45:00",
   },
+  {
+    id: 5,
+    title: "Ajout des Scenarios (liste+detail)",
+    content:
+      "Une fois la technique prise, ajouter une nouvelle entité et les pages qui l'appellent devient moins difficile. La méthode reste un peu poussive, mais savoir que je pourrai facilement swapper mes contenus plus tard rend les efforts rentables.",
+    author: "ValhallaCode",
+    publishedAt: "2026-10-25T00:45:00",
+  },
 ];
 
 export const scenarios = [
@@ -40,7 +48,7 @@ export const scenarios = [
       "Depuis environ deux semaines, plusieurs villageois ont aperçu sur la colline, à l'ouest, des gobelins.",
     author: "ValhallaCode",
     tagIds: [1, 2, 3, 4],
-    warningIds: [],
+    contentWarningIds: [4],
     synopsis:
       "Le forgeron du village demande aux PJs de retrouversa fille disparue, alors que des gobelins ont été aperçus au nord",
     content: `## Contexte
@@ -238,7 +246,7 @@ export const tags = [
     label: "level:haut",
   },
 ];
-export const warnings = [
+export const contentWarnings = [
   {
     id: 1,
     label: "violence sexuelle",

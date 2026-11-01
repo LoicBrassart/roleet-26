@@ -4,7 +4,7 @@ export type Scenario = {
   teaser: string;
   author: string;
   tagIds: number[];
-  warningIds: number[];
+  contentWarningIds: number[];
   synopsis: string;
   content: string;
 };
