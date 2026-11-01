@@ -3,6 +3,9 @@ import { articleListLoader, ArticleListPage } from "@/pages/article-list";
 import { articleDetailLoader, ArticleDetailPage } from "@/pages/article-detail";
 import { RootErrorBoundary } from "./RootErrorBoundary";
 import { App } from "./App";
+import { scenarioListLoader, ScenarioListPage } from "@/pages/scenario-list";
+import { scenarioDetailLoader } from "@/pages/scenario-detail";
+import { ScenarioDetailPage } from "@/pages/scenario-detail";
 
 export const router = createBrowserRouter([
   {
@@ -15,7 +18,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            loader: () => redirect("/blog"),
+            loader: () => redirect("/scenario"),
           },
           {
             path: "blog",
@@ -29,6 +32,21 @@ export const router = createBrowserRouter([
                 path: ":id",
                 Component: ArticleDetailPage,
                 loader: articleDetailLoader,
+              },
+            ],
+          },
+          {
+            path: "scenario",
+            children: [
+              {
+                index: true,
+                Component: ScenarioListPage,
+                loader: scenarioListLoader,
+              },
+              {
+                path: ":id",
+                Component: ScenarioDetailPage,
+                loader: scenarioDetailLoader,
               },
             ],
           },

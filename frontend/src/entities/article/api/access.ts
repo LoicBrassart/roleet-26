@@ -1,4 +1,4 @@
-import { articles } from "@/shared/mock.json";
+import { articles } from "@/shared/mock";
 import type { Article } from "../model/types";
 
 export async function getAllArticles(): Promise<Article[]> {
