@@ -1,138 +1,95 @@
-# Modèle de données — Personnages (v0.1)
+# Modèle de données — Scénarios (v1)
 
-> Statut : **validé v0.1** — périmètre : classes/niveaux, caractéristiques, compétences, jets de sauvegarde, identité mécanique, lore.
-> Système de référence : **D&D 5e, édition 2024** (`dnd5e-2024`).
+> Statut : **validé v1**, pas encore implémenté.
+> Périmètre : un recueil de scénarios originaux à l'usage des meneurs, scellés par défaut.
 
 ## Principes
 
-1. **Trois blocs** : `meta` (technique), `lore` (narratif, commun à tous les systèmes), `sheet` (spécifique au système).
-2. **Règle de rangement lore / système** : un champ appartient au **système** dès qu'au moins une règle, un objet magique ou une mécanique le teste ou en dépend. Sinon, il appartient au **lore**.
-3. **On ne stocke jamais une valeur calculable.** Seules les données saisies par le joueur sont persistées ; tout le reste est dérivé par des fonctions pures.
-4. **Les règles du jeu ne sont pas des données de personnage.** (ex : quelle compétence dépend de quelle caractéristique) → elles relèvent de la *configuration du système*, pas de la base.
-5. **Les clés techniques sont en anglais** (`str`, `athletics`…) ; les libellés français relèvent de l'affichage.
-6. Le champ `system` de `sheet` est le **discriminant** qui permettra d'ajouter d'autres systèmes (union discriminée côté TS).
+1. **Deux blocs** : la `vitrine` aide à choisir un scénario, le `scellé` sert à le mener.
+2. **La vitrine ne contient aucun spoiler.** Le contenu scellé n'apparaît jamais dans la liste, même une fois le scénario descellé : on le lit sur la page de détail.
+3. **Le descellement n'appartient pas au scénario.** Le scénario est le même pour tout le monde, alors que le descellement concerne un utilisateur. Il est donc stocké à part.
+4. **Le descellement est définitif.** Il n'y a que deux états, scellé et descellé, et on ne peut pas resceller.
+5. **On référence, on ne copie pas.** Un scénario stocke les `id` de ses tags et de ses avertissements, jamais leurs libellés.
+6. **Les clés techniques sont en anglais** ; les libellés français relèvent de l'affichage.
 
 ---
 
-## 1. Meta
+## 1. Scénario
+
+| Bloc | Champ | Type | Obligatoire | Remarque |
+|---|---|---|---|---|
+| Vitrine | `id` | identifiant | oui | stable : le descellement s'y réfère |
+| Vitrine | `title` | texte | oui | sans spoiler |
+| Vitrine | `teaser` | texte court | oui | sans spoiler |
+| Vitrine | `author` | texte | oui | |
+| Vitrine | `tagIds` | liste d'identifiants | non | références vers `tag` |
+| Vitrine | `contentWarningIds` | liste d'identifiants | non | références vers `content-warning` |
+| Scellé | `synopsis` | Markdown | oui | la vérité de l'histoire, intrigue et twists compris |
+| Scellé | `content` | Markdown | oui | le scénario à mener |
+
+## 2. Tag
+
+Sert à découvrir des contenus. Les tags seront utilisés dans toute l'application, pas seulement sur les scénarios.
 
 | Champ | Type | Obligatoire | Remarque |
 |---|---|---|---|
-| `id` | identifiant | oui | |
-| `ownerId` | identifiant | oui | référence future vers `user` |
-| `createdAt` | date | oui | |
-| `updatedAt` | date | oui | |
+| `id` | identifiant | oui | ex. `investigation` |
+| `label` | texte | oui | modifiable sans toucher aux scénarios |
 
-## 2. Lore (commun à tous les systèmes)
+## 3. Avertissement de contenu (`content-warning`)
 
-| Champ | Type | Obligatoire | Remarque |
-|---|---|---|---|
-| `name` | texte | oui | |
-| `portraitUrl` | URL | non | |
-| `age` | texte | non | texte libre (« la trentaine », « 312 ans »…) |
-| `pronouns` | texte | non | |
-| `appearance` | texte long | non | taille, poids, yeux, etc. en texte libre |
-| `personality` | texte long | non | |
-| `ideals` | texte | non | narratif (non mécanique en 2024) |
-| `bonds` | texte | non | narratif |
-| `flaws` | texte | non | narratif |
-| `backstory` | texte long | non | |
-| `relations` | liste de *Relation* | non | voir ci-dessous |
-| `notes` | texte long | non | |
+Sert à protéger : il signale un contenu qui peut blesser ou mettre mal à l'aise un membre de la table, et qui ne va pas de soi au vu du genre. Il s'affiche comme un tag, mais reste une donnée distincte, toujours visible avant le descellement. Sa formulation reste générique pour limiter les spoilers.
 
-**Relation**
-
-| Champ | Type | Obligatoire | Remarque |
-|---|---|---|---|
-| `name` | texte | oui | |
-| `kind` | texte | non | allié, rival, famille, mentor… (liste libre en v0.1) |
-| `description` | texte | non | |
-| `characterId` | identifiant | non | *plus tard* : lien vers un autre personnage |
-
-## 3. Sheet — `dnd5e-2024`
-
-| Champ | Type | Obligatoire | Remarque |
-|---|---|---|---|
-| `system` | `"dnd5e-2024"` | oui | discriminant |
-| `species` | identifiant / texte | oui | mécanique (taille, vitesse, traits) — effets non gérés en v0.1 |
-| `background` | identifiant / texte | oui | mécanique en 2024 (bonus de carac, don d'origine, compétences) — effets non gérés en v0.1 |
-| `alignment` | énumération | non | mécanique (testé par certains objets) |
-| `classes` | liste de *ClassLevel* | oui, ≥ 1 | multiclassage géré dès v0.1 ; le **premier élément est la classe de départ** |
-| `abilities` | *Abilities* | oui | scores **finaux** |
-| `savingThrows` | *SavingThrowProficiencies* | oui | |
-| `skills` | *SkillProficiencies* | oui | |
-
-**Alignement** — `lawful-good`, `neutral-good`, `chaotic-good`, `lawful-neutral`, `neutral`, `chaotic-neutral`, `lawful-evil`, `neutral-evil`, `chaotic-evil`, `unaligned`.
-
-**ClassLevel**
-
-| Champ | Type | Contrainte |
+| Champ | Type | Obligatoire |
 |---|---|---|
-| `class` | identifiant | barbarian, bard, cleric, druid, fighter, monk, paladin, ranger, rogue, sorcerer, warlock, wizard |
-| `subclass` | identifiant | facultatif (obtenue au niveau 3 en 2024) |
-| `level` | entier | 1–20 |
+| `id` | identifiant | oui |
+| `label` | texte | oui |
 
-Contrainte globale : somme des `level` ≤ 20.
+La liste est fermée, et sera adaptée au besoin :
 
-**Abilities** — un score entier (1–30) pour chacune :
-
-| Clé | Libellé |
-|---|---|
-| `str` | Force |
-| `dex` | Dextérité |
-| `con` | Constitution |
-| `int` | Intelligence |
-| `wis` | Sagesse |
-| `cha` | Charisme |
-
-En v0.1, on stocke le **score final** (pas de décomposition base + bonus).
-
-**SavingThrowProficiencies** — un booléen par caractéristique (`str` … `cha`).
-Stocké plutôt que déduit de la classe de départ, car des dons (ex. *Résilient*) peuvent en ajouter.
-
-**SkillProficiencies** — un niveau de maîtrise par compétence : `none` | `proficient` | `expertise`.
-
----
-
-## 4. Configuration du système (règles, non persistées par personnage)
-
-**Compétence → caractéristique**
-
-| Carac | Compétences |
-|---|---|
-| `str` | `athletics` (Athlétisme) |
-| `dex` | `acrobatics` (Acrobaties), `sleight-of-hand` (Escamotage), `stealth` (Discrétion) |
-| `con` | — |
-| `int` | `arcana` (Arcanes), `history` (Histoire), `investigation` (Investigation), `nature` (Nature), `religion` (Religion) |
-| `wis` | `animal-handling` (Dressage), `insight` (Intuition), `medicine` (Médecine), `perception` (Perception), `survival` (Survie) |
-| `cha` | `deception` (Tromperie), `intimidation` (Intimidation), `performance` (Représentation), `persuasion` (Persuasion) |
-
-## 5. Valeurs calculées (jamais stockées)
-
-| Valeur | Formule | Dépend de |
+| `id` | Catégorie | Exemples |
 |---|---|---|
-| `totalLevel` | somme des `classes[].level` | classes |
-| `proficiencyBonus` | `2 + floor((totalLevel − 1) / 4)` → +2 (1–4), +3 (5–8), +4 (9–12), +5 (13–16), +6 (17–20) | totalLevel |
-| `abilityModifier(a)` | `floor((score − 10) / 2)` | abilities |
-| `savingThrow(a)` | `mod(a) + (maîtrisé ? PB : 0)` | mod, savingThrows, PB |
-| `skill(s)` | `mod(carac(s)) + PB × {none: 0, proficient: 1, expertise: 2}` | mod, skills, PB |
+| `sexual-violence` | Violences sexuelles | agression, harcèlement, coercition |
+| `child-harm` | Violences sur enfants | maltraitance, mise en danger ou mort d'un enfant |
+| `suicide-self-harm` | Suicide et automutilation | y compris évoqués ou passés |
+| `torture-gore` | Torture et gore | sévices détaillés, mutilations, horreur corporelle |
+| `domestic-abuse` | Violences familiales ou conjugales | emprise, abus au sein d'un couple ou d'une famille |
+| `discrimination` | Discriminations | racisme, sexisme, homophobie, transphobie, validisme, mis en scène de façon marquée |
+| `mental-health` | Santé mentale | psychose, traumatisme, internement |
+| `addiction` | Addictions | drogue, alcool, dépendance |
+| `illness-grief` | Maladie et deuil | maladie grave, agonie, grossesse et perte d'un enfant |
+| `loss-of-agency` | Perte de contrôle du personnage | possession, domination mentale, personnage joué contre son gré |
+| `phobias` | Phobies courantes | araignées, insectes, enfermement, noyade |
 
-Graphe de dépendances :
+## 4. Descellements
 
-```
-classes ──► totalLevel ──► proficiencyBonus ──┐
-                                              ├──► savingThrows (calculés)
-abilities ──► modifiers ──────────────────────┤
-                                              └──► skills (calculés)
-```
+La liste des `id` de scénarios descellés.
+
+En v1, sans authentification, elle est conservée dans le `localStorage` du navigateur. Cela a deux conséquences assumées :
+- « définitif » veut dire : sur cet appareil, tant que le navigateur n'est pas vidé ;
+- le sceau protège des spoilers accidentels, pas d'un tricheur, puisque le contenu scellé est déjà présent côté navigateur.
+
+Un backend remplacera ce stockage : seul l'endroit où vit cette liste changera.
+
+## 5. Stockage en v1
+
+| Donnée | Stockage |
+|---|---|
+| Scénarios | mock |
+| Tags | mock |
+| Avertissements de contenu | mock |
+| Descellements | `localStorage` |
 
 ---
 
-## Hors périmètre v0.1 (à venir)
+## Hors périmètre v1 (à venir)
 
-- Effets mécaniques de l'espèce et de l'historique (bonus de carac, dons, maîtrises automatiques)
-- Règles d'exception propres aux classes (ex. *Touche-à-tout* du barde) — à implémenter **dans le système**, séparément
-- Perception passive, initiative, CA, PV, vitesse
-- Inventaire, sorts, dons, langues, maîtrises d'outils
-- Liens `Relation.characterId` vers d'autres personnages
-- Autres systèmes de jeu
+- **Réglage de masquage des contenus sensibles :** un réglage utilisateur, à configurer à l'inscription, qui ne montre jamais les scénarios portant certains avertissements. À prévoir :
+  - un choix « ne rien masquer » en un clic ;
+  - un réglage modifiable à tout moment ;
+  - une mention du nombre de scénarios masqués, sans détail.
+- **Encarts de différents types dans le Markdown :** piste à étudier, `remark-directive`. `synopsis` et `content` resteront de simples chaînes.
+- **Éditeurs et CRUD :** ils ajouteront probablement un statut de brouillon et des dates de création et de modification.
+- Authentification et suivi par compte
+- Filtres et recherche avancés
+- Campagnes

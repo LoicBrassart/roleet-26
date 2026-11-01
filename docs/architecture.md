@@ -3,7 +3,7 @@
 > Méthodologie : **Feature-Sliced Design (FSD)** — https://feature-sliced.design
 > Voir aussi : [data-model.md](./data-model.md)
 
-> **Statut :** ce document décrit la **cible** (le domaine JDR). Le code actuel est un blog servant d'exercice ; voir [Itération actuelle](#itération-actuelle--le-blog).
+> **Statut :** le code actuel est un blog servant d'exercice ; voir [Itération actuelle](#itération-actuelle--le-blog). La cible y ajoute un recueil de scénarios, et le blog est conservé ; voir [Arborescence cible](#arborescence-cible-v1).
 
 ## Rappel FSD
 
@@ -21,7 +21,7 @@
 ### Règles
 
 1. **Import vers le bas uniquement** : une couche n'importe que des couches strictement inférieures.
-2. **Pas d'import entre slices d'une même couche**, sauf via la notation `@x` (voir plus bas).
+2. **Pas d'import entre slices d'une même couche**, sauf via la notation `@x` (non utilisée pour l'instant).
 3. **API publique** : chaque slice expose un `index.ts` ; on n'importe jamais un fichier interne d'une autre slice.
 4. `app` et `shared` n'ont pas de slices, seulement des segments. `app` n'a pas de segment `ui` (règle Steiger `no-ui-in-app`).
 
@@ -34,35 +34,27 @@
 ## Décisions
 
 ### D1 — `shared` ne contient aucune règle métier
-`shared` = outils techniques du site (UI kit, client HTTP, utilitaires génériques). Les règles de jeu n'y ont pas leur place.
+`shared` = outils techniques du site (UI kit, client HTTP, utilitaires génériques). Les règles métier n'y ont pas leur place.
 
-### D2 — Une entité par système de jeu
-Chaque système supporté est une slice de `entities` (ex. `entities/dnd5e-2024`). Elle contient **tout** ce qui est propre au système :
-- `model` : type de la feuille (`sheet`), configuration des règles, **tous** les calculs (fonctions pures) ;
-- `ui` : composants d'affichage « bêtes » (bloc de carac, ligne de compétence…).
+### D2 — Le mock de `shared` est un bouchon temporaire
+`shared/mock.json` contient des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès des entités le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
 
-**Critère de rangement** : une fonction qui n'a besoin que des données du bloc `sheet` appartient au **système**, pas au personnage.
+### D3 — Tags et avertissements sont des entités indépendantes des scénarios
+`entities/tag` et `entities/content-warning` existent à côté de `entities/scenario`, sans que l'une importe l'autre. Un scénario ne connaît que des `id`, qui sont de simples chaînes. C'est la **page** qui récupère les données et les assemble, donc `@x` n'est pas nécessaire.
 
-### D3 — `entities/character` reste agnostique du système
-Contient `meta`, `lore`, et un `sheet` typé comme **union discriminée** des feuilles des systèmes supportés (discriminant : `sheet.system`). Aucune règle de jeu n'y vit.
+### D4 — Tags et avertissements partagent un composant visuel, pas leurs données
+Le composant d'affichage (ex. `Badge`, avec une variante pour les avertissements) vit dans `shared/ui` et ne connaît ni l'un ni l'autre.
 
-### D4 — Sens de dépendance entre entités : `character → système`, jamais l'inverse
-`character` a besoin du type de feuille du système : il l'importe via l'API croisée `@x` exposée par le système (`entities/dnd5e-2024/@x/character`). Un système ne connaît jamais `character`.
+### D5 — Le descellement est une feature
+« Desceller » est une action utilisateur, donc une slice `features/unseal-scenario`. Le statut scellé / descellé ne fait pas partie du modèle `Scenario` (voir [data-model.md](./data-model.md)).
 
-### D5 — L'aiguillage entre systèmes se fait au niveau `widgets`
-Le widget `character-sheet` affiche le lore (via `character`), lit `sheet.system`, et délègue l'affichage de la feuille au système correspondant. C'est le seul endroit qui **aiguille l'affichage** selon le système. `entities/character` connaît aussi la liste des systèmes, mais uniquement au niveau des types, à travers l'union de D3.
-
-### D6 — Le `model` d'un système est indépendant de React
-Aucun import React / navigateur dans `entities/<système>/model`. Objectif : pouvoir l'extraire plus tard en paquet partagé front/back (moteur de règles) par simple déplacement.
-
-### D7 — Le mock de `shared` est un bouchon temporaire
-`shared/mock.json` contient des articles, donc des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès de l'entité le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
+La liste des descellements est stockée dans le `localStorage` pour le moment, en anticipant qu'un backend le remplacera. La lecture et l'écriture vivent toutes les deux dans le segment `api` de cette slice, avec des fonctions `async`, pour que ce remplacement ne change pas leur signature. Les pages lisent le statut via l'API publique de la feature.
 
 ---
 
 ## Itération actuelle : le blog
 
-Exercice d'apprentissage, avec une seule entité : `article`. L'affichage détaillé des articles et les messages d'erreur ne sont pas une priorité.
+Exercice d'apprentissage, avec une seule entité : `article`. Le blog est conservé quand les scénarios s'y ajoutent. L'affichage détaillé des articles et les messages d'erreur ne sont pas une priorité.
 
 ```
 src/
@@ -73,7 +65,7 @@ src/
 ├── entities/
 │   └── article/
 └── shared/
-    └── mock.json             # bouchon temporaire (D7)
+    └── mock.json             # bouchon temporaire (D2)
 ```
 
 ### Routes
@@ -95,47 +87,44 @@ src/
 
 ---
 
-## Arborescence cible (v0.1)
+## Arborescence cible (v1)
 
 Cible indicative : on ne crée une couche / slice que lorsqu'on en a besoin.
 
 ```
 src/
-├── app/                      # providers, routeur, styles globaux
+├── app/                      # main, router, App (layout), RootErrorBoundary
 ├── pages/
-│   ├── character-list/
-│   ├── character-detail/
-│   └── character-create/
-├── widgets/
-│   └── character-sheet/      # assemble character + système + features (D5)
+│   ├── article-list/
+│   ├── article-detail/
+│   ├── scenario-list/
+│   └── scenario-detail/
 ├── features/
-│   ├── create-character/
-│   ├── edit-character/
-│   └── delete-character/
+│   └── unseal-scenario/      # action de descellement (D5)
 ├── entities/
-│   ├── character/            # meta + lore + sheet (union) — agnostique (D3)
+│   ├── article/
+│   ├── scenario/
 │   │   ├── model/
 │   │   ├── api/
 │   │   ├── ui/
 │   │   └── index.ts
-│   └── dnd5e-2024/           # tout ce qui est propre à D&D 5e 2024 (D2)
-│       ├── model/            # sans React (D6)
-│       ├── ui/
-│       ├── @x/
-│       │   └── character.ts  # API croisée pour entities/character (D4)
-│       └── index.ts
+│   ├── tag/                  # D3
+│   └── content-warning/      # D3
 └── shared/
-    ├── ui/                   # UI kit
-    ├── api/                  # client HTTP / bouchons
-    └── lib/
+    ├── ui/                   # UI kit, dont Badge (D4)
+    └── mock.json             # bouchon temporaire (D2)
 ```
 
-## Graphe de dépendances (v0.1)
+## Graphe de dépendances (v1)
 
 ```
-pages ──► widgets/character-sheet ──► features/* ──► entities/character ──@x──► entities/dnd5e-2024
-                    │                                                              ▲
-                    └──────────────────────────────────────────────────────────────┘
+pages ──► features/unseal-scenario
+  │
+  ├─────► entities/article
+  ├─────► entities/scenario
+  ├─────► entities/tag
+  └─────► entities/content-warning
+
 tout ──► shared
 ```
 
@@ -144,9 +133,8 @@ tout ──► shared
 ## Outillage
 
 - **Steiger** (linter officiel FSD) vérifie automatiquement les règles d'import : `npm run lint:fsd`, inclus dans `npm run check`
-- Prévu : alias d'import `@/` → `src/`
+- **Alias d'import** `@/` → `src/` : pour sortir d'une slice. À l'intérieur d'une slice, les imports restent relatifs.
 
 ## Questions ouvertes
 
-- **Features d'édition spécifiques à un système** : l'édition des caracs / compétences 5e est-elle une feature générique `edit-character` qui délègue au système, ou des features dédiées par système ? À trancher au moment d'implémenter l'édition.
-- **Extraction du moteur de règles** en paquet partagé front/back (cf. D6) : plus tard.
+- **Shadcn** (prévu à terme) : configurer `components.json` pour générer dans `shared/ui` et `shared/lib` avant d'ajouter le premier composant, et déclarer aussi l'alias dans `tsconfig.json`.

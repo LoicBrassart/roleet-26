@@ -5,7 +5,8 @@ N-ème reboot de ce projet
 ## But de l'itération
 
 - Etudier le FSD en React
-- Le blog (`frontend/`) est un bac à sable : un exercice pour apprendre avant de s'attaquer au domaine JDR décrit dans `docs/`
+- Le blog (`frontend/`) a servi d'exercice pour apprendre, et il est conservé
+- Prochain ajout : le recueil de scénarios de JDR décrit dans `docs/`
 
 ## Stack
 

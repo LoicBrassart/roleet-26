@@ -13,7 +13,8 @@ Contexte de reprise pour tout agent IA intervenant sur ce dépôt.
 ## Projet
 
 - Frontend seul pour l'instant, dans `frontend/` : Vite, React 19, TypeScript 6, React Router (mode « data », `createBrowserRouter`), Steiger (linter FSD). Un backend est prévu à terme.
-- Premier objectif : un blog simple avec **une seule entité, `article`**. Ce blog est **avant tout un exercice**, avant le domaine JDR décrit dans `docs/`.
+- Le code actuel est un blog simple avec **une seule entité, `article`**. Ce blog est **avant tout un exercice**.
+- **Objectif de la v1 :** ajouter, à côté du blog qui est conservé, un recueil de scénarios originaux à l'usage des meneurs, scellés par défaut, avec un descellement définitif. On reste « frontend first » : pas d'auth ni de vrai suivi. Le modèle et le périmètre sont dans `docs/data-model.md`, la structure cible dans `docs/architecture.md`.
 - Documentation de l'utilisateur : `readme.md`, `docs/architecture.md`, `docs/data-model.md`.
 
 ### Vérifications (depuis `frontend/`)
@@ -26,7 +27,7 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 
 ## Décisions prises
 
-- **Données :** un mock JSON, `src/shared/mock.json`, importé directement. C'est un **bouchon temporaire assumé** dans `shared` (voir D7 dans `docs/architecture.md`). Les fonctions d'accès sont `async` pour pouvoir passer plus tard à un `fetch` sans changer leur signature.
+- **Données :** un mock JSON, `src/shared/mock.json`, importé directement. C'est un **bouchon temporaire assumé** dans `shared` (voir D2 dans `docs/architecture.md`). Les fonctions d'accès sont `async` pour pouvoir passer plus tard à un `fetch` sans changer leur signature.
 - **Priorités de l'exercice :** l'affichage précis des articles est reporté, et les messages de `RootErrorBoundary` conviennent en l'état. Ne pas les signaler comme des manques en relecture.
 - **Modèle `Article` :** `id: number`, `title`, `content`, `author`, `publishedAt: string`. La date reste une chaîne ISO pour l'instant. Les DTO (type brut dans `api/` avec une conversion vers le type métier dans `model/`) sont reportés à plus tard.
 - **Routing :** les données sont chargées par des loaders React Router, lus avec `useLoaderData<typeof xxxLoader>()`. Les composants ne sont jamais `async`.
@@ -39,7 +40,7 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
   - Une couche importe uniquement depuis les couches **strictement inférieures**, quelle que soit la distance.
   - Il n'y a pas d'import entre slices d'une même couche.
   - Une API publique (`index.ts`) existe **par slice**, jamais au niveau d'une couche.
-  - L'extérieur d'une slice passe toujours par son `index.ts`. À l'intérieur, on utilise des imports relatifs directs (`../model/types`) et jamais `..`, pour éviter les dépendances circulaires.
+  - L'extérieur d'une slice passe toujours par son `index.ts`, avec l'alias `@/`. À l'intérieur, on utilise des imports relatifs directs (`../model/types`) et jamais `..`, pour éviter les dépendances circulaires.
   - L'entité ne connaît pas le routeur : c'est la page qui adapte `params` en arguments métier.
   - Le routeur, dans `app/`, n'importe que des pages, en dehors de `app/` lui-même.
   - `app/` n'a pas de segment `ui` (règle Steiger `no-ui-in-app`) : ses composants sont à sa racine.
@@ -47,7 +48,7 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 
 ## État actuel (au 2026-11-01)
 
-Dernier commit : `Write a new article about react-router and Layout`. Le routeur, le layout et la gestion des erreurs sont terminés.
+Dernier commit : `Create & use alias '@' to facilitate cross-layers imports`. Le routeur, le layout, la gestion des erreurs, les liens de la liste vers le détail et l'alias `@/` sont terminés.
 
 ```
 frontend/src/
@@ -62,18 +63,18 @@ frontend/src/
 - L'arbre de routes et le rôle des deux boundaries sont décrits dans `docs/architecture.md`, section « Itération actuelle ».
 - Les 404 passent par `throw data(..., { status: 404 })`. La route `*` en lance une pour les URL inconnues.
 
-## Mission en cours : les liens de la liste vers le détail
+## Mission en cours : les scénarios
 
-Ajouter des `<Link>` de `ArticleListPage` vers `ArticleDetailPage`. `ArticleCard` (l'entité) ne doit pas dépendre du routage de l'application.
+Le modèle et le périmètre de la v1 sont définis dans `docs/data-model.md`. L'implémentation n'est pas commencée. Le blog est conservé : les scénarios sont un ajout. Les descellements sont stockés dans le `localStorage`, en anticipant qu'un backend le remplacera (voir D5 dans `docs/architecture.md`).
 
-Piste recommandée à l'utilisateur (non commencée au moment de la rédaction, et pas encore validée par lui) : la **page** construit l'URL et enveloppe `ArticleCard` dans un `<Link>`. L'entité ne change pas.
+Les liens suivent ce principe : la **page** construit l'URL et enveloppe la carte dans un `<Link>`. L'entité ne dépend pas du routage.
 
 ## Points ouverts
 
-- boundary spécifique « article introuvable » dans `pages/article-detail/ui/` ;
+- routes des scénarios, et cible de la redirection de `/` (aujourd'hui `/blog`) ;
+- boundary spécifique « introuvable » au niveau d'une page ;
 - DTO et conversion des dates ;
 - fuseau horaire des dates du mock ;
 - affichage de `content` et `publishedAt` dans `ArticleDetail` (reporté par l'utilisateur) ;
-- alias d'import (`@/`) ;
 - route modules `lazy` ;
-- deuxième entité, avec les références croisées entre entités (`@x`).
+- intégration de Shadcn (voir les questions ouvertes de `docs/architecture.md`).
