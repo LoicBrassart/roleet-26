@@ -1,9 +1,6 @@
 import { createBrowserRouter, data, redirect } from "react-router";
-import { articleListLoader, ArticleListPage } from "../pages/article-list";
-import {
-  articleDetailLoader,
-  ArticleDetailPage,
-} from "../pages/article-detail";
+import { articleListLoader, ArticleListPage } from "@/pages/article-list";
+import { articleDetailLoader, ArticleDetailPage } from "@/pages/article-detail";
 import { RootErrorBoundary } from "./RootErrorBoundary";
 import { App } from "./App";
 

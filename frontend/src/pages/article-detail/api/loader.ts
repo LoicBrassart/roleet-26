@@ -1,5 +1,5 @@
 import { data, type LoaderFunctionArgs } from "react-router";
-import { getArticleById } from "../../../entities/article";
+import { getArticleById } from "@/entities/article";
 
 export async function articleDetailLoader({ params }: LoaderFunctionArgs) {
   const { id } = params;

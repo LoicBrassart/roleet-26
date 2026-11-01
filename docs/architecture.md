@@ -3,6 +3,8 @@
 > Méthodologie : **Feature-Sliced Design (FSD)** — https://feature-sliced.design
 > Voir aussi : [data-model.md](./data-model.md)
 
+> **Statut :** ce document décrit la **cible** (le domaine JDR). Le code actuel est un blog servant d'exercice ; voir [Itération actuelle](#itération-actuelle--le-blog).
+
 ## Rappel FSD
 
 ### Couches (du plus haut au plus bas)
@@ -21,7 +23,7 @@
 1. **Import vers le bas uniquement** : une couche n'importe que des couches strictement inférieures.
 2. **Pas d'import entre slices d'une même couche**, sauf via la notation `@x` (voir plus bas).
 3. **API publique** : chaque slice expose un `index.ts` ; on n'importe jamais un fichier interne d'une autre slice.
-4. `app` et `shared` n'ont pas de slices, seulement des segments.
+4. `app` et `shared` n'ont pas de slices, seulement des segments. `app` n'a pas de segment `ui` (règle Steiger `no-ui-in-app`).
 
 ### Segments
 
@@ -48,10 +50,48 @@ Contient `meta`, `lore`, et un `sheet` typé comme **union discriminée** des fe
 `character` a besoin du type de feuille du système : il l'importe via l'API croisée `@x` exposée par le système (`entities/dnd5e-2024/@x/character`). Un système ne connaît jamais `character`.
 
 ### D5 — L'aiguillage entre systèmes se fait au niveau `widgets`
-Le widget `character-sheet` affiche le lore (via `character`), lit `sheet.system`, et délègue l'affichage de la feuille au système correspondant. C'est le seul endroit qui connaît la liste des systèmes.
+Le widget `character-sheet` affiche le lore (via `character`), lit `sheet.system`, et délègue l'affichage de la feuille au système correspondant. C'est le seul endroit qui **aiguille l'affichage** selon le système. `entities/character` connaît aussi la liste des systèmes, mais uniquement au niveau des types, à travers l'union de D3.
 
 ### D6 — Le `model` d'un système est indépendant de React
 Aucun import React / navigateur dans `entities/<système>/model`. Objectif : pouvoir l'extraire plus tard en paquet partagé front/back (moteur de règles) par simple déplacement.
+
+### D7 — Le mock de `shared` est un bouchon temporaire
+`shared/mock.json` contient des articles, donc des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès de l'entité le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
+
+---
+
+## Itération actuelle : le blog
+
+Exercice d'apprentissage, avec une seule entité : `article`. L'affichage détaillé des articles et les messages d'erreur ne sont pas une priorité.
+
+```
+src/
+├── app/                      # main, router, App (layout), RootErrorBoundary
+├── pages/
+│   ├── article-list/
+│   └── article-detail/
+├── entities/
+│   └── article/
+└── shared/
+    └── mock.json             # bouchon temporaire (D7)
+```
+
+### Routes
+
+```
+/  (App + boundary de secours)
+└── sans path (boundary principale)
+    ├── index      → redirection vers /blog
+    ├── blog
+    │   ├── index  → liste
+    │   └── :id    → détail
+    └── *          → loader qui lance une 404
+```
+
+- **Boundary principale :** placée sous le layout, elle attrape les erreurs des pages et garde le header à l'écran.
+- **Boundary de secours :** placée sur le layout, elle ne sert que si `App` plante, et s'affiche donc sans header.
+- **Route `*` :** sans elle, une URL inconnue ne correspondrait à aucun enfant et remonterait au layout, sans passer par la boundary principale.
+- **Loader d'une route parente :** il s'exécute pour tous ses enfants. Une redirection n'y a donc pas sa place, sous peine de boucle infinie : elle va sur la route `index`.
 
 ---
 
@@ -101,10 +141,10 @@ tout ──► shared
 
 ---
 
-## Outillage prévu
+## Outillage
 
-- Alias d'import `@/` → `src/`
-- **Steiger** (linter officiel FSD) pour vérifier automatiquement les règles d'import
+- **Steiger** (linter officiel FSD) vérifie automatiquement les règles d'import : `npm run lint:fsd`, inclus dans `npm run check`
+- Prévu : alias d'import `@/` → `src/`
 
 ## Questions ouvertes
 

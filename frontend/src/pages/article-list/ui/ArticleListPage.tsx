@@ -1,5 +1,5 @@
-import { useLoaderData } from "react-router";
-import { ArticleCard } from "../../../entities/article";
+import { Link, useLoaderData } from "react-router";
+import { ArticleCard } from "@/entities/article";
 import type { articleListLoader } from "../api/loader";
 
 export function ArticleListPage() {
@@ -11,7 +11,9 @@ export function ArticleListPage() {
         <p>Comment ce site a été développé ?</p>
       </hgroup>
       {articles.map((candidate) => (
-        <ArticleCard data={candidate} key={candidate.id} />
+        <Link to={`/blog/${candidate.id}`} key={candidate.id}>
+          <ArticleCard data={candidate} />
+        </Link>
       ))}
     </>
   );
