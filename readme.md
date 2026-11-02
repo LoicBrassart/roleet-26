@@ -6,7 +6,7 @@ N-ème reboot de ce projet
 
 - Etudier le FSD en React
 - Le blog (`frontend/`) a servi d'exercice pour apprendre, et il est conservé
-- Prochain ajout : le recueil de scénarios de JDR décrit dans `docs/`
+- En cours : le recueil de scénarios de JDR décrit dans `docs/`
 
 ## Stack
 

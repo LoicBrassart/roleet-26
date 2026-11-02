@@ -36,7 +36,15 @@ export const articles = [
     content:
       "Une fois la technique prise, ajouter une nouvelle entité et les pages qui l'appellent devient moins difficile. La méthode reste un peu poussive, mais savoir que je pourrai facilement swapper mes contenus plus tard rend les efforts rentables.",
     author: "ValhallaCode",
-    publishedAt: "2026-10-25T00:45:00",
+    publishedAt: "2026-11-02T00:15:00",
+  },
+  {
+    id: 6,
+    title: "Ajout des Tags et ContentWarnings",
+    content:
+      "Moins de difficultés cette fois, et voir le site avancer (sans CSS pour le moment) est bien sympa",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-02T13:55:00",
   },
 ];
 

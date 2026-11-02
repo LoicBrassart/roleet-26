@@ -3,7 +3,7 @@
 > Méthodologie : **Feature-Sliced Design (FSD)** — https://feature-sliced.design
 > Voir aussi : [data-model.md](./data-model.md)
 
-> **Statut :** le code actuel est un blog servant d'exercice ; voir [Itération actuelle](#itération-actuelle--le-blog). La cible y ajoute un recueil de scénarios, et le blog est conservé ; voir [Arborescence cible](#arborescence-cible-v1).
+> **Statut :** le code actuel contient un blog servant d'exercice et un recueil de scénarios en cours d'implémentation ; voir [Itération actuelle](#itération-actuelle). Il reste le descellement ; voir [Arborescence cible](#arborescence-cible-v1).
 
 ## Rappel FSD
 
@@ -40,10 +40,10 @@
 `shared/mock.ts` contient des données métier, ce qui fait exception au principe de `shared`. L'exception est assumée : le mock disparaîtra quand le backend arrivera. Seules les fonctions d'accès des entités le lisent, et elles sont `async` pour que le passage à `fetch` ne change pas leur signature.
 
 ### D3 — Tags et avertissements sont des entités indépendantes des scénarios
-`entities/tag` et `entities/content-warning` existent à côté de `entities/scenario`, sans que l'une importe l'autre. Un scénario ne connaît que des `id`, qui sont de simples nombres. C'est la **page** qui récupère les données et les assemble, donc `@x` n'est pas nécessaire.
+`entities/tag` et `entities/content-warning` existent à côté de `entities/scenario`, sans que l'une importe l'autre. Un scénario ne connaît que des `id`, qui sont de simples nombres. C'est la **page** qui récupère les données et les assemble, donc `@x` n'est pas nécessaire : son loader résout les `id`, et elle passe les badges aux composants de l'entité par un slot (la prop `badges`).
 
 ### D4 — Tags et avertissements partagent un composant visuel, pas leurs données
-Le composant d'affichage (ex. `Badge`, avec une variante pour les avertissements) vit dans `shared/ui` et ne connaît ni l'un ni l'autre.
+`Badge`, avec une variante pour les avertissements, et `BadgeList` vivent dans `shared/ui` et ne connaissent ni l'un ni l'autre : `BadgeList` n'attend que des objets `{ id, label }`.
 
 ### D5 — Le descellement est une feature
 « Desceller » est une action utilisateur, donc une slice `features/unseal-scenario`. Le statut scellé / descellé ne fait pas partie du modèle `Scenario` (voir [data-model.md](./data-model.md)).
@@ -52,19 +52,25 @@ La liste des descellements est stockée dans le `localStorage` pour le moment, e
 
 ---
 
-## Itération actuelle : le blog
+## Itération actuelle
 
-Exercice d'apprentissage, avec une seule entité : `article`. Le blog est conservé quand les scénarios s'y ajoutent. L'affichage détaillé des articles et les messages d'erreur ne sont pas une priorité.
+Le blog est un exercice d'apprentissage, avec une seule entité : `article`. Il est conservé à côté des scénarios. L'affichage détaillé des articles et les messages d'erreur ne sont pas une priorité.
 
 ```
 src/
 ├── app/                      # main, router, App (layout), RootErrorBoundary
 ├── pages/
 │   ├── article-list/
-│   └── article-detail/
+│   ├── article-detail/
+│   ├── scenario-list/
+│   └── scenario-detail/
 ├── entities/
-│   └── article/
+│   ├── article/
+│   ├── scenario/
+│   ├── tag/
+│   └── content-warning/
 └── shared/
+    ├── ui/                   # Badge, BadgeList, Markdown
     └── mock.ts               # bouchon temporaire (D2)
 ```
 
@@ -73,8 +79,11 @@ src/
 ```
 /  (App + boundary de secours)
 └── sans path (boundary principale)
-    ├── index      → redirection vers /blog
+    ├── index      → redirection vers /scenario
     ├── blog
+    │   ├── index  → liste
+    │   └── :id    → détail
+    ├── scenario
     │   ├── index  → liste
     │   └── :id    → détail
     └── *          → loader qui lance une 404
@@ -111,7 +120,7 @@ src/
 │   ├── tag/                  # D3
 │   └── content-warning/      # D3
 └── shared/
-    ├── ui/                   # UI kit, dont Badge (D4)
+    ├── ui/                   # UI kit, dont Badge (D4) et l'enveloppe de react-markdown
     └── mock.ts               # bouchon temporaire (D2)
 ```
 
