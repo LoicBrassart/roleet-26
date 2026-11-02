@@ -5,4 +5,5 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   resolve: { tsconfigPaths: true },
+  server: { port: 5273 },
 });

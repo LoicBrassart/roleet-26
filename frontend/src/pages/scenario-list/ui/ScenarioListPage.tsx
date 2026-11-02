@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "react-router";
 import type { scenarioListLoader } from "../api/loader";
 import { ScenarioCard } from "@/entities/scenario";
+import { BadgeList } from "@/shared/ui";
 
 export function ScenarioListPage() {
   const scenarios = useLoaderData<typeof scenarioListLoader>();
@@ -12,7 +13,15 @@ export function ScenarioListPage() {
       </hgroup>
       {scenarios.map((candidate) => (
         <Link to={`/scenario/${candidate.id}`} key={candidate.id}>
-          <ScenarioCard data={candidate} />
+          <ScenarioCard
+            data={candidate}
+            badges={
+              <>
+                <BadgeList data={candidate.contentWarnings} variant="warning" />
+                <BadgeList data={candidate.tags} />
+              </>
+            }
+          />
         </Link>
       ))}
     </>
