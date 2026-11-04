@@ -5,6 +5,7 @@ import { RootErrorBoundary } from "./RootErrorBoundary";
 import { App } from "./App";
 import { scenarioListLoader, ScenarioListPage } from "@/pages/scenario-list";
 import {
+  scenarioDetailAction,
   scenarioDetailLoader,
   ScenarioDetailPage,
 } from "@/pages/scenario-detail";
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
                 path: ":id",
                 Component: ScenarioDetailPage,
                 loader: scenarioDetailLoader,
+                action: scenarioDetailAction,
               },
             ],
           },

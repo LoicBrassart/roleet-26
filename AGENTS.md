@@ -36,7 +36,7 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 - **Routing :** les données sont chargées par des loaders React Router, lus avec `useLoaderData<typeof xxxLoader>()`. Les composants ne sont jamais `async`.
 - **Conventions de nommage :**
   - Les exports de l'entité ont des noms explicites (`getAllArticles`, `getArticleById`, `ArticleCard`, `ArticleDetail`), sans alias.
-  - Chaque page a son loader dans `pages/<slice>/api/loader.ts`, exporté sous le nom `<slice en camelCase>Loader` (`articleListLoader`, `articleDetailLoader`).
+  - Chaque page a son loader dans `pages/<slice>/api/loader.ts`, exporté sous le nom `<slice en camelCase>Loader` (`articleListLoader`, `articleDetailLoader`). Une action suit le même modèle : `api/action.ts`, `<slice en camelCase>Action`.
   - Les fichiers de types s'appellent `model/types.ts`, et les composants `ui/NomDuComposant.tsx`.
   - Les composants utilisent des exports nommés, pas d'export par défaut.
 - **Règles FSD appliquées :**
@@ -51,7 +51,7 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 
 ## État actuel (au 2026-11-02)
 
-Le routeur, le layout, la gestion des erreurs, les liens de la liste vers le détail et l'alias `@/` sont terminés. Les pages liste et détail des scénarios existent, et `/` redirige vers `/scenario`. Les badges et le rendu Markdown sont en place.
+Le routeur, le layout, la gestion des erreurs, les liens de la liste vers le détail et l'alias `@/` sont terminés. Les pages liste et détail des scénarios existent, et `/` redirige vers `/scenario`. Les badges, le rendu Markdown, le descellement et le statut dans la liste sont en place : le périmètre de la v1 est implémenté.
 
 ```
 frontend/src/
@@ -60,7 +60,9 @@ frontend/src/
 │   ├── article-list/    api/loader.ts, ui/ArticleListPage.tsx, index.ts
 │   ├── article-detail/  api/loader.ts, ui/ArticleDetailPage.tsx, index.ts
 │   ├── scenario-list/   api/loader.ts, ui/ScenarioListPage.tsx, index.ts
-│   └── scenario-detail/ api/loader.ts, ui/ScenarioDetailPage.tsx, index.ts
+│   └── scenario-detail/ api/loader.ts, api/action.ts, ui/ScenarioDetailPage.tsx, index.ts
+├── features/
+│   └── unseal-scenario/ api/access.ts, ui/UnsealButton.tsx, ui/SealStatus.tsx, index.ts
 ├── entities/
 │   ├── article/         api/access.ts, model/types.ts, ui/ArticleCard.tsx, ui/ArticleDetail.tsx, index.ts
 │   ├── scenario/        api/access.ts, model/types.ts, ui/ScenarioCard.tsx, ui/ScenarioDetail.tsx, ui/ScenarioSealedContent.tsx, index.ts
@@ -76,11 +78,17 @@ frontend/src/
 - Les loaders des scénarios renvoient chaque scénario à plat, complété de ses `tags` et `contentWarnings` résolus. La liste ne charge les tags et les avertissements qu'une fois.
 - Les composants de l'entité gardent `data: Scenario` et reçoivent les badges par un slot, la prop `badges` de type `ReactNode`. La page les construit avec `BadgeList`, donc `scenario` n'importe jamais `tag`.
 - Seul `shared/ui/Markdown.tsx` importe `react-markdown`.
-- `ScenarioDetail` affiche `ScenarioSealedContent` sans condition. C'est temporaire jusqu'au descellement.
+- Le descellement :
+  - `features/unseal-scenario/api/access.ts` lit et écrit la liste des `id` dans le `localStorage`. Une valeur absente, corrompue ou de mauvaise forme donne `[]`.
+  - `UnsealButton` est un `<Form method="post">` sans champ, avec un `window.confirm`. Il ne connaît ni l'`id` ni la page.
+  - `scenarioDetailAction`, déclarée sur la route `scenario/:id`, valide `params.id` et appelle `unsealScenario`. React Router relance ensuite le loader, sans `useState`.
+  - Les deux loaders ajoutent `isUnsealed` à chaque scénario.
+  - `ScenarioDetail` reçoit la partie scellée par un slot, `sealedContent`, que la page remplit avec `ScenarioSealedContent` ou `UnsealButton`.
+  - Dans la liste, `ScenarioCard` reçoit le statut par un slot dédié, `sealStatus`, que la page remplit avec `SealStatus` (fourni par la feature). Décision de l'utilisateur : le statut n'est pas un badge, car un badge décrit le contenu, alors que le statut décrit la relation de l'utilisateur au scénario.
 
 ## Mission en cours : les scénarios
 
-Le modèle et le périmètre de la v1 sont définis dans `docs/data-model.md`. L'implémentation est en cours : restent le descellement et le statut scellé ou descellé dans la liste. Le blog est conservé : les scénarios sont un ajout. Les descellements sont stockés dans le `localStorage`, en anticipant qu'un backend le remplacera (voir D5 dans `docs/architecture.md`).
+Le modèle et le périmètre de la v1 sont définis dans `docs/data-model.md`. Ils sont implémentés, et `npm run check` passe sans erreur. Le blog est conservé : les scénarios sont un ajout. Les descellements sont stockés dans le `localStorage`, en anticipant qu'un backend le remplacera (voir D5 dans `docs/architecture.md`).
 
 Les liens suivent ce principe : la **page** construit l'URL et enveloppe la carte dans un `<Link>`. L'entité ne dépend pas du routage.
 

@@ -2,6 +2,7 @@ import { Link, useLoaderData } from "react-router";
 import type { scenarioListLoader } from "../api/loader";
 import { ScenarioCard } from "@/entities/scenario";
 import { BadgeList } from "@/shared/ui";
+import { SealStatus } from "@/features/unseal-scenario";
 
 export function ScenarioListPage() {
   const scenarios = useLoaderData<typeof scenarioListLoader>();
@@ -21,6 +22,7 @@ export function ScenarioListPage() {
                 <BadgeList data={candidate.tags} />
               </>
             }
+            sealStatus={<SealStatus isUnsealed={candidate.isUnsealed} />}
           />
         </Link>
       ))}

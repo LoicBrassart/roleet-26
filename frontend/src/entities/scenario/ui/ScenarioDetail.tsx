@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import type { Scenario } from "../model/types";
-import { ScenarioSealedContent } from "./ScenarioSealedContent";
 
 type Props = {
   data: Scenario;
   badges: ReactNode;
+  sealedContent: ReactNode;
 };
-export function ScenarioDetail({ data, badges }: Props) {
+export function ScenarioDetail({ data, badges, sealedContent }: Props) {
   return (
     <article>
       <hgroup>
@@ -16,7 +16,7 @@ export function ScenarioDetail({ data, badges }: Props) {
       <p>{badges}</p>
       <h2>Teaser</h2>
       <p>{data.teaser}</p>
-      <ScenarioSealedContent data={data} />
+      {sealedContent}
     </article>
   );
 }

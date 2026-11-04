@@ -1,4 +1,5 @@
 export type BadgeType = "tag" | "warning";
+import styles from "./Badge.module.css";
 
 interface Props {
   label: string;
@@ -6,7 +7,7 @@ interface Props {
 }
 export function Badge({ label, variant = "tag" }: Props) {
   return (
-    <span>
+    <span className={styles.Badge}>
       {variant === "warning" && "⚠️ "}
       {label}
     </span>

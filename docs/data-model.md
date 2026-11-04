@@ -1,6 +1,6 @@
 # Modèle de données — Scénarios (v1)
 
-> Statut : **validé v1**, implémentation en cours.
+> Statut : **validé v1**, implémenté.
 > Périmètre : un recueil de scénarios originaux à l'usage des meneurs, scellés par défaut.
 
 ## Principes

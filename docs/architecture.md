@@ -3,7 +3,7 @@
 > Méthodologie : **Feature-Sliced Design (FSD)** — https://feature-sliced.design
 > Voir aussi : [data-model.md](./data-model.md)
 
-> **Statut :** le code actuel contient un blog servant d'exercice et un recueil de scénarios en cours d'implémentation ; voir [Itération actuelle](#itération-actuelle). Il reste le descellement ; voir [Arborescence cible](#arborescence-cible-v1).
+> **Statut :** le code actuel contient un blog servant d'exercice et le recueil de scénarios de la v1 ; voir [Itération actuelle](#itération-actuelle) et [Arborescence cible](#arborescence-cible-v1).
 
 ## Rappel FSD
 
@@ -50,6 +50,8 @@
 
 La liste des descellements est stockée dans le `localStorage` pour le moment, en anticipant qu'un backend le remplacera. La lecture et l'écriture vivent toutes les deux dans le segment `api` de cette slice, avec des fonctions `async`, pour que ce remplacement ne change pas leur signature. Les pages lisent le statut via l'API publique de la feature.
 
+`UnsealButton` est un `<Form method="post">` de React Router. Il déclenche l'`action` de la page, qui appelle `unsealScenario`, puis React Router relance les loaders : l'affichage se met à jour sans état local. L'entité ne connaît pas la feature : la page lui passe soit le contenu scellé, soit le bouton, par le slot `sealedContent`.
+
 ---
 
 ## Itération actuelle
@@ -63,7 +65,9 @@ src/
 │   ├── article-list/
 │   ├── article-detail/
 │   ├── scenario-list/
-│   └── scenario-detail/
+│   └── scenario-detail/      # loader et action
+├── features/
+│   └── unseal-scenario/
 ├── entities/
 │   ├── article/
 │   ├── scenario/
@@ -85,7 +89,7 @@ src/
     │   └── :id    → détail
     ├── scenario
     │   ├── index  → liste
-    │   └── :id    → détail
+    │   └── :id    → détail, avec l'action de descellement
     └── *          → loader qui lance une 404
 ```
 

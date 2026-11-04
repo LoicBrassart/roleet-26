@@ -46,8 +46,23 @@ export const articles = [
     author: "ValhallaCode",
     publishedAt: "2026-11-02T13:55:00",
   },
+  {
+    id: 7,
+    title: "Création d'un compo simple de lecture de MDown",
+    content:
+      "Heh, cette fois j'ai botté en touche en faisant juste un composant qui appelle une lib externe. Pas une mauvaise chose, ça permettra que le reste de l'app n'ait pas à s'en soucier et d'ajouter des comportements specifiques par la suite",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-02T19:55:00",
+  },
+  {
+    id: 8,
+    title: "La première 'feature': le descellement",
+    content:
+      "Creation de la slice 'features', on stocke la logique dans un dossier api/ et les composants dans ui/. La méthode tient debout jusque là! De la même manière qu'une route peut avoir un loader opur charger ses données en amont, on peut lui configurer une action si un form est validé sur cette route ",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-02T19:55:00",
+  },
 ];
-
 export const scenarios = [
   {
     id: 1,

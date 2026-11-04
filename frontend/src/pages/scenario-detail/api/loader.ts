@@ -2,6 +2,7 @@ import { data, type LoaderFunctionArgs } from "react-router";
 import { getScenarioById } from "@/entities/scenario";
 import { getAllTags } from "@/entities/tag";
 import { getAllContentWarnings } from "@/entities/content-warning";
+import { getUnsealedScenarioIds } from "@/features/unseal-scenario";
 
 export async function scenarioDetailLoader({ params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -19,5 +20,11 @@ export async function scenarioDetailLoader({ params }: LoaderFunctionArgs) {
   const scenWarns = warnings.filter((currWarn) =>
     scenario.contentWarningIds.includes(currWarn.id),
   );
-  return { ...scenario, tags: scenTags, contentWarnings: scenWarns };
+  const unsealedScenarios = await getUnsealedScenarioIds();
+  return {
+    ...scenario,
+    tags: scenTags,
+    contentWarnings: scenWarns,
+    isUnsealed: unsealedScenarios.includes(cleanId),
+  };
 }
