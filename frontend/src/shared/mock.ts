@@ -58,7 +58,15 @@ export const articles = [
     id: 8,
     title: "La première 'feature': le descellement",
     content:
-      "Creation de la slice 'features', on stocke la logique dans un dossier api/ et les composants dans ui/. La méthode tient debout jusque là! De la même manière qu'une route peut avoir un loader opur charger ses données en amont, on peut lui configurer une action si un form est validé sur cette route ",
+      "Creation de la slice 'features', on stocke la logique dans un dossier api/ et les composants dans ui/. La méthode tient debout jusque là! De la même manière qu'une route peut avoir un loader pour charger ses données en amont, on peut lui configurer une action si un form est validé sur cette route ",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-02T19:55:00",
+  },
+  {
+    id: 9,
+    title: "Les slots",
+    content:
+      "Le FSD nous contraint parfois à transmettre à un composant une props composée elle-même de subcomponents pour esquiver les contraintes de la méthode. La logique se tient, mais c'est parfois un peu contre-intuitif de calculer les briques à insérer ensuite dans les slots",
     author: "ValhallaCode",
     publishedAt: "2026-11-02T19:55:00",
   },
