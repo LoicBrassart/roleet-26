@@ -52,6 +52,21 @@ La liste des descellements est stockée dans le `localStorage` pour le moment, e
 
 `UnsealButton` est un `<Form method="post">` de React Router. Il déclenche l'`action` de la page, qui appelle `unsealScenario`, puis React Router relance les loaders : l'affichage se met à jour sans état local. L'entité ne connaît pas la feature : la page lui passe soit le contenu scellé, soit le bouton, par le slot `sealedContent`.
 
+Dans la liste, le statut passe par un slot dédié de `ScenarioCard`, `sealStatus`, que la page remplit avec `SealStatus`. Ce n'est pas un badge, car un badge décrit le contenu, alors que le statut décrit la relation de l'utilisateur au scénario.
+
+### D6 — Styles : Shadcn avec Tailwind pour l'instant, puis CSS Modules
+Shadcn est adopté pour ses composants (style, accessibilité, facilité d'utilisation), avec Tailwind en attendant de réécrire sa couche de style en CSS Modules, composant par composant.
+
+- **`app/styles/` :**
+  - `index.css` : le point d'entrée importé par `main.tsx`. Il contient l'import de Tailwind et le bloc `@theme inline`, qui disparaîtront avec Tailwind.
+  - `theme.css` : les variables du thème (`--background`, `--primary`, `--radius`, etc.), en CSS standard, qui survivront à Tailwind.
+- **Reset :** Preflight, celui de Tailwind, dont les composants Shadcn dépendent. Pas de second reset tant que Tailwind est là. Si un reset coexiste un jour avec Tailwind, il doit être importé dans la couche `base` (`@import ... layer(base)`), sinon il écrase les classes Tailwind.
+- **Composants Shadcn :** dans `shared/ui/shadcn/`, avec les noms de fichiers en minuscules générés par la CLI. C'est la seule exception à la convention de nommage. Ils sont exportés par `shared/ui/index.ts`, comme les autres : les consommateurs ignorent leur origine.
+- **`components.json` :** l'alias `ui` pointe vers `@/shared/ui/shadcn`, et `utils` vers `@/shared/lib/utils`. L'alias `@/` est aussi déclaré dans le `tsconfig.json` racine, que lit la CLI.
+- **Tailwind reste confiné à `shared/ui/shadcn/`.** Le reste du code utilise des CSS Modules et les variables de `theme.css`.
+- **Markdown :** `@tailwindcss/typography` et la classe `prose` dans `shared/ui/Markdown.tsx`, car Preflight retire les styles par défaut.
+- **Migration, plus tard :** pour chaque composant, une version en `.tsx` et `.module.css` avec la même API (`cva` reste utilisable), puis la correction des composants de `shadcn/` qui l'importaient, la mise à jour de `index.ts` et la suppression du fichier généré. Quand `shadcn/` est vide, on retire Tailwind et on ajoute un reset moderne.
+
 ---
 
 ## Itération actuelle
@@ -125,6 +140,8 @@ src/
 │   └── content-warning/      # D3
 └── shared/
     ├── ui/                   # UI kit, dont Badge (D4) et l'enveloppe de react-markdown
+    │   └── shadcn/           # composants générés, remplacés au fur et à mesure (D6)
+    ├── lib/                  # cn (D6)
     └── mock.ts               # bouchon temporaire (D2)
 ```
 
@@ -150,4 +167,4 @@ tout ──► shared
 
 ## Questions ouvertes
 
-- **Shadcn** (prévu à terme) : configurer `components.json` pour générer dans `shared/ui` et `shared/lib` avant d'ajouter le premier composant, et déclarer aussi l'alias dans `tsconfig.json`.
+- **`Badge` :** garder le composant maison ou adopter celui de Shadcn. La décision sera prise après le setup (D6).

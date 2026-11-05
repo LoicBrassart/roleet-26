@@ -32,12 +32,13 @@ Cette commande enchaîne ESLint (`lint`), Steiger (`lint:fsd`) et le build, qui 
 - **Données de mock :** le scénario actuel vient d'aidedd.org et la mention du site y est laissée volontairement, pour ne pas oublier de le remplacer. Son Markdown n'est pas soigné, et c'est assumé. Ne pas les signaler en relecture.
 - **Identifiants :** les `id` de `Scenario`, `Tag` et `ContentWarning` sont numériques, car l'utilisateur les gère comme de vraies entités en vue de futures features.
 - **Tags à deux niveaux :** les libellés comme `mastering:facile` restent ainsi pour le moment, et seront repris plus tard.
+- **Styles (D6 dans `docs/architecture.md`) :** Shadcn avec Tailwind pour l'instant, dans `shared/ui/shadcn/`, puis réécriture progressive de sa couche de style en CSS Modules. L'utilisateur ne veut pas de Tailwind : il reste confiné aux fichiers générés, et tout le reste du code utilise des CSS Modules et les variables de `app/styles/theme.css`. Ne pas proposer de classes Tailwind ailleurs.
 - **Modèle `Article` :** `id: number`, `title`, `content`, `author`, `publishedAt: string`. La date reste une chaîne ISO pour l'instant. Les DTO (type brut dans `api/` avec une conversion vers le type métier dans `model/`) sont reportés à plus tard.
 - **Routing :** les données sont chargées par des loaders React Router, lus avec `useLoaderData<typeof xxxLoader>()`. Les composants ne sont jamais `async`.
 - **Conventions de nommage :**
   - Les exports de l'entité ont des noms explicites (`getAllArticles`, `getArticleById`, `ArticleCard`, `ArticleDetail`), sans alias.
   - Chaque page a son loader dans `pages/<slice>/api/loader.ts`, exporté sous le nom `<slice en camelCase>Loader` (`articleListLoader`, `articleDetailLoader`). Une action suit le même modèle : `api/action.ts`, `<slice en camelCase>Action`.
-  - Les fichiers de types s'appellent `model/types.ts`, et les composants `ui/NomDuComposant.tsx`.
+  - Les fichiers de types s'appellent `model/types.ts`, et les composants `ui/NomDuComposant.tsx`. Seule exception : les fichiers générés par Shadcn dans `shared/ui/shadcn/`, en minuscules.
   - Les composants utilisent des exports nommés, pas d'export par défaut.
 - **Règles FSD appliquées :**
   - Une couche importe uniquement depuis les couches **strictement inférieures**, quelle que soit la distance.
@@ -101,4 +102,5 @@ Les liens suivent ce principe : la **page** construit l'URL et enveloppe la cart
 - fuseau horaire des dates du mock ;
 - affichage de `content` et `publishedAt` dans `ArticleDetail` (reporté par l'utilisateur) ;
 - route modules `lazy` ;
-- intégration de Shadcn (voir les questions ouvertes de `docs/architecture.md`).
+- setup de Tailwind et Shadcn (D6), prévu sur une branche dédiée ;
+- choix entre le `Badge` maison et celui de Shadcn, après ce setup.
