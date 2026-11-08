@@ -106,5 +106,5 @@ Les liens suivent ce principe : la **page** construit l'URL et enveloppe la cart
 - affichage de `content` et `publishedAt` dans `ArticleDetail` (reporté par l'utilisateur) ;
 - route modules `lazy` ;
 - styles d'éléments globaux (`nav`, titres, listes), dans `@layer base` (D6) : Preflight les a remis à zéro ;
-- mode sombre : les variables `.dark` existent dans `theme.css`, mais rien n'applique encore la classe ;
+- mode sombre : décision de suivre uniquement la préférence système (`prefers-color-scheme`, sans JS) pour l'instant, un bouton de bascule viendra plus tard. Implémentation en cours ;
 - choix entre le `Badge` maison et celui de Shadcn, après ce setup.
