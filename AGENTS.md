@@ -71,8 +71,11 @@ frontend/src/
 │   └── content-warning/ api/access.ts, model/types.ts, index.ts
 └── shared/
     ├── mock.ts
-    └── ui/              Badge.tsx, BadgeList.tsx, Markdown.tsx, index.ts
+    ├── lib/             utils.ts (réexporte cn)
+    └── ui/              Badge.tsx (+ .module.css), BadgeList.tsx, Markdown.tsx (+ .module.css), index.ts, shadcn/ (vide pour l'instant)
 ```
+
+`app/` contient aussi `styles/index.css` (Tailwind) et `styles/theme.css` (variables du thème), et `frontend/` contient `components.json`.
 
 - L'arbre de routes et le rôle des deux boundaries sont décrits dans `docs/architecture.md`, section « Itération actuelle ».
 - Les 404 passent par `throw data(..., { status: 404 })`. La route `*` en lance une pour les URL inconnues.
@@ -102,5 +105,6 @@ Les liens suivent ce principe : la **page** construit l'URL et enveloppe la cart
 - fuseau horaire des dates du mock ;
 - affichage de `content` et `publishedAt` dans `ArticleDetail` (reporté par l'utilisateur) ;
 - route modules `lazy` ;
-- setup de Tailwind et Shadcn (D6), prévu sur une branche dédiée ;
+- styles d'éléments globaux (`nav`, titres, listes), dans `@layer base` (D6) : Preflight les a remis à zéro ;
+- mode sombre : les variables `.dark` existent dans `theme.css`, mais rien n'applique encore la classe ;
 - choix entre le `Badge` maison et celui de Shadcn, après ce setup.
