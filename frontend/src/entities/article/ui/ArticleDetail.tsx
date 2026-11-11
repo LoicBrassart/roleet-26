@@ -10,6 +10,7 @@ export function ArticleDetail({ data }: Props) {
         <h1>{data.title}</h1>
         <p>By {data.author}</p>
       </hgroup>
+      <p>{data.content}</p>
     </article>
   );
 }
