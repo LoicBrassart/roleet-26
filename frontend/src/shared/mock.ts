@@ -70,6 +70,30 @@ export const articles = [
     author: "ValhallaCode",
     publishedAt: "2026-11-02T19:55:00",
   },
+  {
+    id: 10,
+    title: "TWind et Shadcn",
+    content:
+      "Je n'suis toujours pas fan de TWind, mais Shadcn est basé dessus exclusivement... Pour le coup, j'ai au moins fait en sorte que shadcn/TWind soient confinés dans la couche `shared/` de FSD et que je puisse remplacer les composants au fur et à mesure",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-05T19:55:00",
+  },
+  {
+    id: 11,
+    title: "Dark theme & prefs système",
+    content:
+      "Je ne pige pas pourquoi la plupart des sites proposent encore un toggle pour le dark theme: tous les OS majeus proposent de choisir un thème light ou dark et le browser connait l'info, c'est littéralement *une* ligne de CSS de donner au user un thème par défaut qui lui convient",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-07T19:55:00",
+  },
+  {
+    id: 12,
+    title: "Theming",
+    content:
+      "Shadwn/TWind amènent leurs propres tokens pour le style, et je voulais avoir les miens. Le plus simple est de les séparer dans deux fichiers distincts et de les appeler depuis un fichier qui inclut tout d'un coup",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-08T14:20:00",
+  },
 ];
 export const scenarios = [
   {

@@ -1,6 +1,0 @@
-@layer base {
-  /* Insert global css here */
-  * {
-    color: var(--foreground);
-  }
-}
