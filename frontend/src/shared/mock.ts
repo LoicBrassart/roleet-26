@@ -94,6 +94,14 @@ export const articles = [
     author: "ValhallaCode",
     publishedAt: "2026-11-08T14:20:00",
   },
+  {
+    id: 13,
+    title: "Déploiement GH Pages",
+    content:
+      "Un peu plus compliqué que je le pensais pour le coup. Il faut: 1/ Indiquer dans vite.config.ts la base d'url à appliquer; 2/ Indiquer dansle routeur qu'il doit utiliser la variable de vite.config.ts également; 4/ Faire le build ('npm run check' le fait ici); 3/ GHPages gere apparemment mal les liens profonds (par exemple '/scenarios/1'), il faut donc dupliquer l'index.html en 404.html; Ramener le build à la racine du repo (pas de dossier intermédiaire); 5/ push le projet; 6/ Configurer GHPages (pas trop dur)",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-12T13:01:00",
+  },
 ];
 export const scenarios = [
   {
