@@ -94,6 +94,14 @@ export const articles = [
     author: "ValhallaCode",
     publishedAt: "2026-11-08T14:20:00",
   },
+  {
+    id: 13,
+    title: "Deploiement front sur GH Pages",
+    content:
+      "Un peu moins simple que je m'y attendais. Il faut: 1/ configurer vite.config.ts pour qu'il préfixe les urls (ici avec '/roleet-26/'); 2/ informer le routeur qu'il doit utiliser la config de vite; 3/ Faire le build (npm run check le fait ici); 4/ Faire une copie de index.html renommée 404.html pour gérer les liens profonds (/scenarios/1); 5/ Tester le local avec 'npm run preview'; push le dossier dist/ (.gitignore à changer); 6/ configurer GHPages sur le site de GHub",
+    author: "ValhallaCode",
+    publishedAt: "2026-11-08T14:20:00",
+  },
 ];
 export const scenarios = [
   {

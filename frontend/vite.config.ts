@@ -7,4 +7,5 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { tsconfigPaths: true },
   server: { port: 5273 },
+  base: "/roleet-26/",
 });

@@ -10,58 +10,61 @@ import {
   ScenarioDetailPage,
 } from "@/pages/scenario-detail";
 
-export const router = createBrowserRouter([
-  {
-    path: "/",
-    Component: App,
-    ErrorBoundary: RootErrorBoundary,
-    children: [
-      {
-        ErrorBoundary: RootErrorBoundary,
-        children: [
-          {
-            index: true,
-            loader: () => redirect("/scenario"),
-          },
-          {
-            path: "blog",
-            children: [
-              {
-                index: true,
-                Component: ArticleListPage,
-                loader: articleListLoader,
-              },
-              {
-                path: ":id",
-                Component: ArticleDetailPage,
-                loader: articleDetailLoader,
-              },
-            ],
-          },
-          {
-            path: "scenario",
-            children: [
-              {
-                index: true,
-                Component: ScenarioListPage,
-                loader: scenarioListLoader,
-              },
-              {
-                path: ":id",
-                Component: ScenarioDetailPage,
-                loader: scenarioDetailLoader,
-                action: scenarioDetailAction,
-              },
-            ],
-          },
-          {
-            path: "*",
-            loader: () => {
-              throw data("Page introuvable", { status: 404 });
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      Component: App,
+      ErrorBoundary: RootErrorBoundary,
+      children: [
+        {
+          ErrorBoundary: RootErrorBoundary,
+          children: [
+            {
+              index: true,
+              loader: () => redirect("/scenario"),
             },
-          },
-        ],
-      },
-    ],
-  },
-]);
+            {
+              path: "blog",
+              children: [
+                {
+                  index: true,
+                  Component: ArticleListPage,
+                  loader: articleListLoader,
+                },
+                {
+                  path: ":id",
+                  Component: ArticleDetailPage,
+                  loader: articleDetailLoader,
+                },
+              ],
+            },
+            {
+              path: "scenario",
+              children: [
+                {
+                  index: true,
+                  Component: ScenarioListPage,
+                  loader: scenarioListLoader,
+                },
+                {
+                  path: ":id",
+                  Component: ScenarioDetailPage,
+                  loader: scenarioDetailLoader,
+                  action: scenarioDetailAction,
+                },
+              ],
+            },
+            {
+              path: "*",
+              loader: () => {
+                throw data("Page introuvable", { status: 404 });
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
